@@ -5,6 +5,14 @@ We show how to prove the induction principle of parametrized lists
 from the induction principle for indexed lists.
 *)
 
+(*
+When trying to prove the parametric induction principle for list T,
+given P : list T -> Type you can take as your predicate
+P' : forall T', list T' -> Type such that P T' l := forall e : T = T', (transp P e) l.
+This way you always have an equality between T (which you know things about)
+and an arbitrary T' which you can use to specialize.
+*)
+
 Inductive list_param@{i j | i <= j} (T : Type@{i}) : Type@{j} :=
   | nilp : list_param T
   | consp : T -> list_param T -> list_param T.
