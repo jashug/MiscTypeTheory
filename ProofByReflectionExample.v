@@ -3,25 +3,21 @@ Section Barendregt.
 
 Variable P : Prop.
 
-Fixpoint B (n : nat) := match n with | 1 => P | S n' => P <-> B n' | 0 => True end.
+Fixpoint B (n : nat) := match n with | O => P | S n' => P <-> B n' end.
 
-Lemma B2n: forall n, B (2 * n).
+Lemma B2n: forall n, B (1 + n * 2).
 Proof.
-refine (fix B2n n : B (2 * n) := match n with | 0 => I | S n' => _ end).
-refine (let IH : B (2 * n') := B2n n' in _).
-change (B (S (n' + S (n' + 0)))).
-rewrite <- (plus_n_Sm n' (n' + 0)).
-change (B (2 + (2 * n'))).
-refine (match 2 * n' as nn return B nn -> B (2 + nn)
-        with O => fun _ => iff_refl P | S n'' => _ end IH).
-intro IH'.
-change (P <-> (P <-> B (S n''))).
-tauto.
+exact (fix B2n n : B (1 + n * 2) :=
+  match n with
+  | O => iff_refl P
+  | S n' => let IH : B (1 + n' * 2) := B2n n' in
+            ltac:(tauto) : P <-> (P <-> B (1 + n' * 2))
+  end).
 Qed.
 
 End Barendregt.
 
 Lemma iffP : forall P : Prop, P <-> (P <-> (P <-> (P <-> (P <-> (P <-> (P <-> (P <-> (P <-> P)))))))).
 Proof.
-exact (fun P => B2n P 5).
+exact (fun P => B2n P 4).
 Qed.
